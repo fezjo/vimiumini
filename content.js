@@ -22,44 +22,51 @@
   // Optimized Character Set: Home row -> Strong fingers
   const CHARACTERS = "fjdkslaghwrieucmvnqo";
 
-  document.addEventListener("keydown", (e) => {
-    if (!isEnabled) return;
+  document.addEventListener(
+    "keydown",
+    (e) => {
+      if (!isEnabled) return;
 
-    // Ignore typing in input fields unless we are in hint mode
-    if (
-      !isHintMode &&
-      (e.target.tagName === "INPUT" ||
-        e.target.tagName === "TEXTAREA" ||
-        e.target.isContentEditable)
-    ) {
-      return;
-    }
+      // Check if we are in an input field
+      const target = e.composedPath ? e.composedPath()[0] : e.target;
+      const isInput =
+        target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.isContentEditable ||
+        (target.getAttribute && target.getAttribute("role") === "textbox");
 
-    // Toggle Hint Mode
-    // 'f' = Current Tab, 'F' (Shift+f) = New Tab
-    if ((e.key === "f" || e.key === "F") && !isHintMode) {
-      if (!e.metaKey && !e.ctrlKey && !e.altKey) {
-        e.preventDefault();
-        openInNewTabMode = e.key === "F"; // Check if Shift was held
-        createHints();
+      // Ignore typing in input fields unless we are in hint mode
+      if (!isHintMode && isInput) {
         return;
       }
-    }
 
-    if (isHintMode) {
-      e.preventDefault();
-      e.stopPropagation();
-
-      if (e.key === "Escape") {
-        removeHints();
-      } else if (/^[a-zA-Z]$/.test(e.key)) {
-        handleKeyInput(e.key.toLowerCase());
-      } else if (e.key === "Backspace") {
-        inputBuffer = inputBuffer.slice(0, -1);
-        updateHintVisuals();
+      // Toggle Hint Mode
+      // 'f' = Current Tab, 'F' (Shift+f) = New Tab
+      if ((e.key === "f" || e.key === "F") && !isHintMode) {
+        if (!e.metaKey && !e.ctrlKey && !e.altKey) {
+          e.preventDefault();
+          openInNewTabMode = e.key === "F"; // Check if Shift was held
+          createHints();
+          return;
+        }
       }
-    }
-  });
+
+      if (isHintMode) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (e.key === "Escape") {
+          removeHints();
+        } else if (/^[a-zA-Z]$/.test(e.key)) {
+          handleKeyInput(e.key.toLowerCase());
+        } else if (e.key === "Backspace") {
+          inputBuffer = inputBuffer.slice(0, -1);
+          updateHintVisuals();
+        }
+      }
+    },
+    true,
+  ); // Use capture phase to handle events before the page does
 
   function createHints() {
     isHintMode = true;
