@@ -66,8 +66,9 @@
     inputBuffer = "";
 
     // Added 'summary' and explicit tabindex support
+    // Google Drive uses gridcell, menuitem, option, row
     const selectors =
-      "a, button, input, textarea, select, summary, [onclick], [role='button'], [tabindex]:not([tabindex='-1'])";
+      "a, button, input, textarea, select, summary, [onclick], [role='button'], [role='gridcell'], [role='menuitem'], [role='option'], [role='row'], [tabindex]:not([tabindex='-1'])";
 
     let elements = Array.from(document.querySelectorAll(selectors)).filter(
       isVisible,
@@ -196,11 +197,17 @@
       });
       element.dispatchEvent(clickEvent);
     } else {
-      // Standard Click
-      element.click();
-      if (["INPUT", "TEXTAREA"].includes(element.tagName)) {
-        element.focus();
-      }
+      // Complex apps (Google Drive) often need mousedown/mouseup + focus
+      const eventOptions = {
+        bubbles: true,
+        cancelable: true,
+        view: window,
+      };
+
+      element.dispatchEvent(new MouseEvent("mousedown", eventOptions));
+      element.dispatchEvent(new MouseEvent("mouseup", eventOptions));
+      element.click(); // Dispatch native click
+      element.focus(); // Always focus to ensure keyboard input works
     }
   }
 
