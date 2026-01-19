@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+    <head>
+        <style>
+            body {
+                width: 200px;
+                font-family: sans-serif;
+                padding: 10px;
+            }
+            .option {
+                margin-bottom: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+            label {
+                font-size: 14px;
+            }
+        </style>
+    </head>
+    <body>
+        <h3>Vimiumini Settings</h3>
+        <hr />
+        <div class="option">
+            <label for="globalToggle">Enable Globally</label>
+            <input type="checkbox" id="globalToggle" />
+        </div>
+        <div class="option">
+            <label for="siteToggle">Enable on this site</label>
+            <input type="checkbox" id="siteToggle" />
+        </div>
+        <script src="popup.js"></script>
+    </body>
+</html>
